@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built JAR file into the container
-COPY target/sportstracker-1.0-SNAPSHOT.jar sportstracker.jar
+COPY target/sportstracker.jar sportstracker.jar
 
 # Command to run the application
 CMD ["java", "-jar", "sportstracker.jar"]
