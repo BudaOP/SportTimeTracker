@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "ibudaa/sportstracker:latest"
+        DOCKERHUB_REPO = "ibudaa/sportstracker"
+        DOCKER_IMAGE_TAG = "latest"
+        DOCKERHUB_CREDENTIALS_ID = "dockerhub-credentials"
     }
 
     stages {
@@ -32,14 +34,18 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t ${env.DOCKER_IMAGE} .'
+                script {
+                    docker.build("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}")
+                }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Image to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub-credentials', url: '']) {
-                    bat 'docker push ${env.DOCKER_IMAGE}'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS_ID) {
+                        docker.image("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}").push()
+                    }
                 }
             }
         }
